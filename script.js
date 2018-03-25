@@ -16,7 +16,9 @@
 
     Game.prototype = {
         update: function () {
-            console.log('update Objects');
+            this.objects.forEach(function (obj) {
+                obj.update();
+            });
         },
 
         draw: function (canvas, canvasSize) {
@@ -38,6 +40,15 @@
         this.size = { x: 15, y: 15 };
         this.center = { x: canvasSize.x / 2, y: canvasSize.y - this.size.x };
     };
+    Player.prototype = {
+        update: function () {
+            if (keyLeft) {
+                this.center.x -= 2;
+            } else if (keyRight) {
+                this.center.x += 2;
+            }
+        },
+    };
 
     // DRAW OBJECT
     var drawObject = function (canvas, obj) {
@@ -49,6 +60,42 @@
             obj.size.y
         );
         canvas.fillStyle = 'black';
+    };
+
+    //KEYBOARD
+    var keyRight = false;   //39
+    var keyLeft = false;    //37
+    var keySpace = false;   //32
+    window.onkeydown = function (e) {
+        console.log('e: ', e);
+        switch (e.keyCode) {
+            case 39:
+                keyRight = true;
+                break;
+            case 37:
+                keyLeft = true;
+                break;
+            case 32:
+                keySpace = true;
+                break;
+            default:
+                break;
+        }
+    };
+    window.onkeyup = function (e) {
+        switch (e.keyCode) {
+            case 39:
+                keyRight = false;
+                break;
+            case 37:
+                keyLeft = false;
+                break;
+            case 32:
+                keySpace = false;
+                break;
+            default:
+                break;
+        }
     };
 
     // LOAD NEW GAME
