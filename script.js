@@ -47,10 +47,26 @@
             } else if (keyRight) {
                 this.center.x += 2;
             }
+            if (keySpace){
+                var bullet = new Bullet ({ x: this.center.x, y: this.center.y - this.size.x / 2 }, -5);
+                this.game.addObject(bullet);
+            }
         },
     };
 
-    // DRAW OBJECT
+    // BULLET OBJECT
+    var Bullet = function(center, velocity) {
+        this.size = { x: 3, y: 3 };
+        this.center = center;
+        this.velocity = velocity;
+    };
+    Bullet.prototype = {
+        update: function() {
+            this.center.y += this.velocity;
+        },
+    };
+
+    // DRAW METHOD
     var drawObject = function (canvas, obj) {
         canvas.fillStyle = obj.color;
         canvas.fillRect(
