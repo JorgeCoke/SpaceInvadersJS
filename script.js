@@ -7,6 +7,11 @@
         console.log('this.objects: ', this.objects);
         var self = this;
 
+        this.canShoot = false;
+        setInterval(function(){
+            self.canShoot = true;
+        }, 250);
+
         var nextFrame = function () {
             self.update();
             self.draw(canvas, canvasSize);
@@ -58,9 +63,10 @@
             } else if (keyRight) {
                 this.center.x += 2;
             }
-            if (keySpace){
+            if (keySpace && this.game.canShoot){
                 var bullet = new Bullet ({ x: this.center.x, y: this.center.y - this.size.x / 2 }, -5, 'cyan', 'player');
                 this.game.addObject(bullet);
+                this.game.canShoot = false;
             }
         },
     };
