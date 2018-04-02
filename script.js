@@ -3,7 +3,8 @@
         var canvasElement = document.getElementById('canvas');
         var canvas = canvasElement.getContext('2d');
         var canvasSize = { x: canvasElement.width, y: canvasElement.height };
-        this.objects = [new Player(this, canvasSize)];
+        this.objects = createEnemies(this).concat([new Player(this, canvasSize)]);
+        console.log('this.objects: ', this.objects);
         var self = this;
 
         var nextFrame = function () {
@@ -48,22 +49,58 @@
                 this.center.x += 2;
             }
             if (keySpace){
-                var bullet = new Bullet ({ x: this.center.x, y: this.center.y - this.size.x / 2 }, -5);
+                var bullet = new Bullet ({ x: this.center.x, y: this.center.y - this.size.x / 2 }, -5, 'cyan');
                 this.game.addObject(bullet);
             }
         },
     };
 
     // BULLET OBJECT
-    var Bullet = function(center, velocity) {
-        this.size = { x: 3, y: 3 };
+    var Bullet = function(center, velocity, color) {
+        this.size = { x: 3, y: 12 };
         this.center = center;
         this.velocity = velocity;
+        this.color = color;
     };
     Bullet.prototype = {
         update: function() {
             this.center.y += this.velocity;
         },
+    };
+
+    //ENEMY OBJECT
+    var Enemy = function(game, center) {
+        this.game = game;
+        this.color = 'red';
+        this.size = { x: 15, y: 15 };
+        this.center = center;
+        this.patrolX = 0;
+        this.speedX = 0.3;
+    };
+    Enemy.prototype = {
+        update: function() {
+            if (this.patrolX < 0 || this.patrolX > 40) {
+                this.speedX = -this.speedX;
+            }
+            this.center.x += this.speedX;
+            this.patrolX += this.speedX;
+            if (Math.random() > 0.995) {
+                var bullet = new Bullet({ x: this.center.x, y: this.center.y + this.size.x / 2 }, 3, 'purple');
+                this.game.addObject(bullet);
+            }
+        },
+    };
+
+    //CREATE ENEMY METHOD
+    var createEnemies = function(game) {
+        console.log('game: ', game);
+        var enemies = [];
+        for (var i = 0; i < 12; i++) {
+            var x = i * 25 + 100;
+            enemies.push(new Enemy(game, { x: x, y: 15 }));
+        }
+        console.log('enemies: ', enemies);
+        return enemies;
     };
 
     // DRAW METHOD
