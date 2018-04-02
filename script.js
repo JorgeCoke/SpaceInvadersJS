@@ -17,6 +17,15 @@
 
     Game.prototype = {
         update: function () {
+            var objectsArray = this.objects;
+            var notCollidingWithAnything = function(body1) {
+                return (
+                    objectsArray.filter(function(body2) {
+                        return colliding(body1, body2);
+                    }).length === 0
+                );
+            };
+            this.objects = this.objects.filter(notCollidingWithAnything);
             this.objects.forEach(function (obj) {
                 obj.update();
             });
@@ -36,6 +45,7 @@
 
     // PLAYER OBJECT
     var Player = function (game, canvasSize) {
+        this.type = 'player';
         this.game = game;
         this.color = 'orange';
         this.size = { x: 15, y: 15 };
@@ -49,14 +59,15 @@
                 this.center.x += 2;
             }
             if (keySpace){
-                var bullet = new Bullet ({ x: this.center.x, y: this.center.y - this.size.x / 2 }, -5, 'cyan');
+                var bullet = new Bullet ({ x: this.center.x, y: this.center.y - this.size.x / 2 }, -5, 'cyan', 'player');
                 this.game.addObject(bullet);
             }
         },
     };
 
     // BULLET OBJECT
-    var Bullet = function(center, velocity, color) {
+    var Bullet = function(center, velocity, color, type) {
+        this.type = type;
         this.size = { x: 3, y: 12 };
         this.center = center;
         this.velocity = velocity;
@@ -70,6 +81,7 @@
 
     //ENEMY OBJECT
     var Enemy = function(game, center) {
+        this.type = 'enemy';
         this.game = game;
         this.color = 'red';
         this.size = { x: 15, y: 15 };
@@ -85,7 +97,7 @@
             this.center.x += this.speedX;
             this.patrolX += this.speedX;
             if (Math.random() > 0.995) {
-                var bullet = new Bullet({ x: this.center.x, y: this.center.y + this.size.x / 2 }, 3, 'purple');
+                var bullet = new Bullet({ x: this.center.x, y: this.center.y + this.size.x / 2 }, 3, 'purple', 'enemy');
                 this.game.addObject(bullet);
             }
         },
@@ -113,6 +125,15 @@
             obj.size.y
         );
         canvas.fillStyle = 'black';
+    };
+
+    // COLLIDING METHOD
+    var colliding = function(body1, body2) {
+        return ((body1.type == 'player' && body2.type == 'enemy') || (body1.type == 'enemy' && body2.type == 'player')) && 
+        (body1.center.x <= body2.center.x+5) && 
+        (body1.center.x >= body2.center.x-5) && 
+        (body1.center.y <= body2.center.y+5) && 
+        (body1.center.y >= body2.center.y-5);
     };
 
     //KEYBOARD
