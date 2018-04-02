@@ -4,13 +4,13 @@
         var canvas = canvasElement.getContext('2d');
         var canvasSize = { x: canvasElement.width, y: canvasElement.height };
         this.objects = createEnemies(this).concat([new Player(this, canvasSize)]);
-        console.log('this.objects: ', this.objects);
         var self = this;
 
         this.canShoot = false;
         setInterval(function(){
             self.canShoot = true;
-        }, 250);
+        }, 500);
+        this.shootSound = new Audio('shoot.wav');
 
         var nextFrame = function () {
             self.update();
@@ -67,6 +67,7 @@
                 var bullet = new Bullet ({ x: this.center.x, y: this.center.y - this.size.x / 2 }, -5, 'cyan', 'player');
                 this.game.addObject(bullet);
                 this.game.canShoot = false;
+                this.game.shootSound.play();
             }
         },
     };
@@ -135,10 +136,10 @@
 
     // COLLIDING METHOD
     var colliding = function(body1, body2) {
-        return ((body1.type == 'player' && body2.type == 'enemy') || (body1.type == 'enemy' && body2.type == 'player')) && 
-        (body1.center.x <= body2.center.x+5) && 
-        (body1.center.x >= body2.center.x-5) && 
-        (body1.center.y <= body2.center.y+5) && 
+        return ((body1.type == 'player' && body2.type == 'enemy') || (body1.type == 'enemy' && body2.type == 'player')) &&
+        (body1.center.x <= body2.center.x+5) &&
+        (body1.center.x >= body2.center.x-5) &&
+        (body1.center.y <= body2.center.y+5) &&
         (body1.center.y >= body2.center.y-5);
     };
 
